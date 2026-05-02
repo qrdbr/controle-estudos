@@ -1,0 +1,31 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Test cache
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# VS Code settings
+.vscode/
+.settings/
+
+# Local environment variables and secrets
+.env
+*.env
+
+# macOS and Windows system files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
