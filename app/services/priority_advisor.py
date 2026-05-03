@@ -48,7 +48,7 @@ class PriorityAdvisor:
                 score -= 5
             prioridade.append((score, atividade))
 
-        prioridade.sort(key=lambda item: (item[0], item[1].get("id_atividade", 0)))
+        prioridade.sort(key=lambda item: (-item[0], item[1].get("id_atividade", 0)))
         return prioridade[0][1] if prioridade else None
 
     def _call_llm(self, atividades: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
