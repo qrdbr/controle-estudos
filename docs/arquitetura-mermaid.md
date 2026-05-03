@@ -1,10 +1,10 @@
 ```mermaid
 flowchart TD
-    ClientIn["Usuário/Cliente"] -->|HTTP Request| API["API"]
-    API -->|Chama| Service["Service"]
-    Service -->|Consulta/Grava| Repository["Repository"]
-    Repository -->|Acessa| DB["Banco de Dados"]
-    Service -->|Consulta/Usa| PriorityAdvisor["PriorityAdvisor"]
-    PriorityAdvisor --|Sugestão/Prioridade| Service
-    API -->|HTTP Response| ClientOut["Usuário/Cliente"]
+    ClientIn["Usuário/Cliente"] --> API["API"]
+    API --> Service["Service"]
+    Service --> Repository["Repository"]
+    Repository --> DB["Banco de Dados"]
+    Service --> PriorityAdvisor["PriorityAdvisor"]
+    PriorityAdvisor --> Service
+    API --> ClientOut["Usuário/Cliente"]
 ```
