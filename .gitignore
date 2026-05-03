@@ -23,6 +23,9 @@ htmlcov/
 .env
 *.env
 
+# Local demo/documentation (não versionado)
+docs/DEMO_TECNICA.md
+
 # macOS and Windows system files
 .DS_Store
 Thumbs.db

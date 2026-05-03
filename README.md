@@ -42,8 +42,9 @@ flowchart TD
 ## Instalação
 
 ### Pré-requisitos
-- Python 3.11 ou superior
+- Python 3.11.x
 - Git
+- Ambiente virtual (`venv`)
 
 ### Passos
 1. **Clone o repositório**:
@@ -57,7 +58,7 @@ flowchart TD
    python -m venv .venv
    source .venv/bin/activate  # Linux/Mac
    # ou
-   .venv\Scripts\activate     # Windows
+   .venv\Scripts\activate    # Windows
    ```
 
 3. **Instale as dependências**:
@@ -65,17 +66,36 @@ flowchart TD
    pip install -r requirements.txt
    ```
 
+4. **Copie o arquivo de exemplo de ambiente**:
+   ```bash
+   copy .env.example .env      # Windows
+   cp .env.example .env        # Linux/Mac
+   ```
+
+5. **Configure variáveis de ambiente**:
+   - `OPENAI_API_KEY`: chave opcional da OpenAI
+   - `OPENAI_MODEL`: modelo de IA a ser usado
+   - `PRIORITY_ADVISOR_TIMEOUT_SECONDS`: timeout em segundos para chamada externa
+
+> O SQLite é usado como persistência local e não requer instalação adicional se o Python já estiver disponível.
+
 ## Execução
 
 1. **Inicie o servidor**:
    ```bash
-   uvicorn app.main:app --reload
+   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   ```
+   ou, se estiver usando o `Makefile`:
+   ```bash
+   make run
    ```
 
 2. **Acesse a aplicação**:
-   - API: [http://localhost:8000](http://localhost:8000)
-   - Documentação: [http://localhost:8000/docs](http://localhost:8000/docs)
-   - Healthcheck: [http://localhost:8000/health](http://localhost:8000/health)
+   - API: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+   - Documentação: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+   - Healthcheck: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+> Se quiser alterar host ou porta, ajuste os parâmetros `--host` e `--port` no comando do Uvicorn.
 
 ## Testes
 
@@ -83,6 +103,12 @@ Execute os testes automatizados com pytest:
 
 ```bash
 pytest
+```
+
+ou usando o `Makefile`:
+
+```bash
+make test
 ```
 
 ### Cobertura
@@ -125,20 +151,33 @@ pytest tests/test_control_routes.py
 
 ## Integração com IA
 
-O `PriorityAdvisor` sugere a próxima atividade baseada em heurística local (priorizando atividades concluídas e revisadas). Opcionalmente, integra com OpenAI GPT-4o-mini para recomendações inteligentes.
+O `PriorityAdvisor` sugere a próxima atividade usando heurística local e pode chamar a OpenAI quando configurado.
 
 ### Configuração
-- Defina a variável de ambiente `OPENAI_API_KEY` para habilitar IA.
-- Sem chave: usa apenas heurística local (sem custo).
-- Com chave: tenta IA com timeout de 3s; falha segura para heurística.
+- `OPENAI_API_KEY`: chave opcional da OpenAI.
+- `OPENAI_MODEL`: modelo para chamadas de IA (`gpt-3.5-turbo`, por exemplo).
+- `PRIORITY_ADVISOR_TIMEOUT_SECONDS`: timeout em segundos para a chamada externa.
+
+### Comportamento
+- Sem `OPENAI_API_KEY`: o sistema roda com heurística local, sem custo adicional.
+- Com chave: tenta usar a OpenAI e respeita `PRIORITY_ADVISOR_TIMEOUT_SECONDS`.
+- Se a chamada à OpenAI falhar ou estourar o timeout, o fallback seguro retorna a sugestão local.
 
 ### Exemplo de Uso
 ```python
 from app.services.priority_advisor import PriorityAdvisor
 
 advisor = PriorityAdvisor()
+atividades = [
+    {"id_atividade": 1, "id_curso": 1, "descricao_atividade": "Estudar listas", "estudo_concluido": False, "revisao_finalizada": False}
+]
 sugestao = advisor.suggest_proxima_atividade(atividades, use_llm=True)
 ```
+
+### Observações
+- A integração é opcional e não bloqueia o funcionamento da API.
+- Use `OPENAI_MODEL` para controlar o modelo de IA desejado.
+- Mensagens de erro da chamada externa são tratadas internamente e não impactam a experiência CRUD básica.
 
 ## Limitações
 
